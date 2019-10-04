@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="../static/js/jquery-2.2.2.min.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>获取请求参数</title>
+</head>
+<body>
+<div style="height: 40px">
+    <button><a href="/">首页</a></button>
+</div>
+<h1>快速获取请求参数，包括 Get、POST 等方式的请求</h1>
+<pre>
+
+
+    GetString(key string) string
+    GetStrings(key string) []string
+    GetInt(key string)(int64, err)
+    GetBool(key string)( bool, err)
+    GetFloat(key string) (folat64, err)
+</pre>
+<h1> 快速解析表单直接解析到struct</h1>
+<pre>
+
+
+    type user struct {
+        Id int `form:"-"`
+        Name Interface{} `form:"username"`
+        Age int `form:"age"`
+        Email string
+    }
+
+    表单：
+    <form id="user">
+        username名字：<input name="username" type="text" />
+        age年龄：<input name="age" type="text" />
+        Email邮箱：<input name="Email" type="text" />
+        <input type="submit" value="提交" />
+    </form>
+    注意：
+        如果要忽略一个字段，有两种办法，一是：字段名小写开头，二是：form
+    标签的值设置为 -
+        定义 struct 时，字段名后如果有 form 返个 tag，则会以把 form 表单里
+    的 name 和 tag 的名称一样的字段赋值给返个字段，否则就会把 form 表
+    单里不字段名一样的表单内容赋值给返个字段。如上面例子中，会把表单
+    中的 username 和 age 分删赋值给 user 里的 Name 和 Age 字段，而
+    Email 里的内容则会赋给 Email 返个字段
+
+    解析
+    func (this *MainController) Post() {
+        u := user{}
+        if err := this.ParseForm(&u); err != nil {}
+    }
+</pre>
+<h1>解析Request Body内容</h1>
+<pre>
+    配置文件设置 copyrequestbody=true
+
+    解析
+    func (this *ObejctController) Post() {
+    var ob models.Object
+    json.Unmarshal(this.Ctx.Input.RequestBody, &ob)
+    objectid := models.AddOne(ob)
+    this.Data["json"] = "{\"ObjectId\":\"" + objectid + "\"}"
+    this.ServeJson()
+}
+
+</pre>
+
+</body>
+</html>

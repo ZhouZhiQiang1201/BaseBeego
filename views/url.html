@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>高级路由设置</title>
+</head>
+<body>
+<div style="height: 40px">
+    <button><a href="/">首页</a></button>
+    <button><a href="/v1/testurl">url前缀或版本</a></button>
+</div>
+<pre>
+    一个请求访问一个方法(也是最常用的)，请求和方法之间用 : 隔开，不同的请求用 ; 隔开:
+    beego.Router("/simple",&SimpleController{},"get:GetFunc;post:PostFunc")
+
+    可以多个请求，访问一个方法 ，请求之间用 , 隔开，请求与方法之间用 : 隔开：
+    beego.Router("/api",&RestController{},"get,post:ApiFunc")
+
+    所有的请求访问同一个方法，用 * 号代表所有的请求，和方法之间用 : 隔开：
+    beego.Router("/api/list",&RestController{},"*:ListFood")
+
+    如果同时存在 * 和对应的 HTTP请求，那么优先执行 HTTP请求所对应的方法，例如同时注册了如下所示的路
+由：
+    beego.Router("/simple",&SimpleController{},"*:AllFunc;post:PostFunc")
+
+</pre>
+<h4>namespace</h4>
+<pre>
+    初始化
+    beego.NewNamespace("/v1",
+        beego.NSCond(func(ctx *context.Context) bool {
+            if ctx.Input.Domain() == "api.beego.me" {
+                return true
+            }
+            return false
+        }),
+        beego.NSBefore(auth),
+        beego.NSGet("/notallowed", func(ctx *context.Context) {
+            ctx.Output.Body([]byte("notAllowed"))
+        }),
+
+        beego.NSRouter("/version", &AdminController{}, "get:ShowAPIVersion"),
+        beego.NSRouter("/changepassword", &UserController{}),
+        beego.NSNamespace("/shop",
+            beego.NSBefore(sentry),
+            beego.NSGet("/:id", func(ctx *context.Context) {
+                ctx.Output.Body([]byte("notAllowed"))
+            }),
+        ),
+        beego.NSNamespace("/cms",
+            beego.NSInclude( 注释路由
+                &controllers.MainController{},
+                &controllers.CMSController{},
+                &controllers.BlockController{},
+            ),
+        ),
+    )
+    //注册 namespace
+    beego.AddNamespace(ns)
+    上面返个代码支持了如下返样的请求 URL
+    • GET /v1/notallowed
+    • GET /v1/version
+    • GET /v1/changepassword
+    • POST /v1/changepassword
+    • GET /v1/shop/123
+    • GET /v1/cms/ 对应 MainController、CMSController、BlockController
+    中得注解路由
+
+
+    namespace 的接口如下:
+        • NewNamespace(prefix string, funcs ...interface{})
+        刜始化 namespace 对象,下面返些凼数都是 namespace 对象的方法,但是
+        强烈推荐使用 NS 开头的相应凼数注册，因为返样更容易通过 gofmt 工具
+        看的更清楚路由的级删关系
+        • NSCond(cond namespaceCond)
+        支持满足条件的就执行该 namespace,丌满足就丌执行
+        • NSBefore(filiterList ...FilterFunc)
+        • NSAfter(filiterList ...FilterFunc)
+        91 / 329
+        上面分删对应 beforeRouter 和 FinishRouter 两个过滤器，可以同时注册
+        多个过滤器
+        • NSInclude(cList ...ControllerInterface)
+        • NSRouter(rootpath string, c ControllerInterface,
+        mappingMethods ...string)
+        • NSGet(rootpath string, f FilterFunc)
+        • NSPost(rootpath string, f FilterFunc)
+        • NSDelete(rootpath string, f FilterFunc)
+        • NSPut(rootpath string, f FilterFunc)
+        • NSHead(rootpath string, f FilterFunc)
+        • NSOptions(rootpath string, f FilterFunc)
+        • NSPatch(rootpath string, f FilterFunc)
+        • NSAny(rootpath string, f FilterFunc)
+        • NSHandler(rootpath string, h http.Handler)
+        • NSAutoRouter(c ControllerInterface)
+        • NSAutoPrefix(prefix string, c ControllerInterface)
+
+    支持前置过滤,条件刞断,无限嵌套 namespace
+
+    ns :=
+        beego.NewNamespace("/v1",
+         beego.NSNamespace("/shop", ...)
+         beego.NSNamespace("/order",...)
+         )
+
+
+</pre>
+</body>
+</html>

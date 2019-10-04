@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>XSRF</title>
+</head>
+<body>
+<div style="height: 40px">
+    <button><a href="/">首页</a></button>
+</div>
+<pre style="font-size: 24px">
+    beego 有内建的 XSRF 的防范机刢，要使用此机刢，你需要在应用配置文件中
+    加上 enablexsrf 设定：
+    enablexsrf = true
+    xsrfkey = 61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o
+    xsrfexpire = 3600
+    戒者直接在 main 入口处返样设置：
+    beego.EnableXSRF = true
+    beego.XSRFKEY = "61oETzKXQAGaYdkL5gEmGeJJFuYh7EQnp2XdTP1o"
+    beego.XSRFExpire = 3600 //过期时间，默认 60 秒
+
+    设置屏蔽controller级别
+    func (a *AdminController) Prepare() { a.EnableXSRF = false }
+</pre>
+<div>
+    <p>XSRF: {{.xsrf}}</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>工具模块</title>
+</head>
+<body>
+<pre>
+    <h2>导包</h2>
+    github.com/astaxie/beego/toolbox
+
+    <h2>task任务</h2>
+    任务名称  spec定时任务格式  执行函数
+    tk1 := toolbox.NewTask("tk1", "0 12 * * * *", func() error { fmt.Println("tk1"); return nil })
+
+    <h4>测试</h4>
+    err := tk1.Run()
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    <h4>添加到计划任务表</h4>
+    toolbox.AddTask("tk1", tk1)
+
+    <h4>开始执行全局任务</h4>
+    toolbox.StartTask()
+    defer toolbox.StopTask()
+
+
+
+</pre>
+
+</body>
+</html>

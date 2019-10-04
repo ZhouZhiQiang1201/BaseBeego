@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>错误处理</title>
+</head>
+<body>
+<div style="height: 40px">
+    <button><a href="/">首页</a></button>
+    <button><a href="/myerror">自定义错误</a></button>
+
+</div>
+<h1>错误处理</h1>
+<pre>
+    <h4>抛出异常Abort</h4>
+    this.Abort("401")
+
+    <h4>重新定义或自定义</h4>
+    func page_not_found(rw http.ResponseWriter, r *http.Request) {
+        t, _ := templater.New("404.html").ParseFiles(beego.ViewsPath+ "/404.html")
+        data := make(map[string]interface{})
+        data["content"] = "page not found"
+        t.Execute(rw, data)
+    }
+
+    beego.Errorhandler("404", page_not_found)
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Session</title>
+</head>
+<body>
+<div style="height: 40px">
+    <button><a href="/">首页</a></button>
+</div>
+<h1>Session使用</h1>
+<pre>
+    <h4>配置文件</h4>
+    SessionOn = true
+    SessionName
+    设置 cookies 的名字，Session 默认是保存在用户的浏觅器 cookies 里面
+    的，默认名是 beegosessionID
+    SessionGCMaxLifetime
+    设置 Session 过期的时间，默认值是 3600 秒
+    SessionHashKey
+    默认的 key 是 beegoserversessionkey，
+
+    <h4>方法</h4>
+    SetSession(name string, value interface{})
+    GetSession(name string) interface{}
+    DelSession(name string)
+    SessionRegenerateId()
+    DestroySession()
+
+
+</pre>
+
+</body>
+</html>

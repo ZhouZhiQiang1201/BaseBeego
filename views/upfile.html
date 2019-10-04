@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传文件</title>
+</head>
+<body>
+<div style="height: 40px">
+    <button><a href="/">首页</a></button>
+</div>
+<h1>文件上传</h1>
+<pre>
+    表单设置属性 enctype="multipart/form-data"
+
+    设置文件大小默认64M  maxmemory = 1<<22
+
+    获取文件信息
+    GetFile(key string) (multipart.File, *multipart.FileHeader, error)
+
+    保存文件信息
+    SaveToFile(fromfile, tofile string) error
+</pre>
+
+<form method="post" action="/upfile" enctype="multipart/form-data">
+    <input type="hidden" name="_xsrf" value="{{.xsrf}}">
+{{/*    {{.xsrfdata}}*/}}
+    <input type="file" name="files">
+    <input type="submit">
+</form>
+{{.error}}
+</body>
+</html>

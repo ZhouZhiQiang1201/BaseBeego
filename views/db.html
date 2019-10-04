@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>数据库操作</title>
+    <script src="../static/js/jquery-2.2.2.min.js"></script>
+</head>
+<body>
+<div style="height: 40px">
+    <button><a href="/">首页</a></button>
+
+</div>
+<div>
+    <h2>提示信息</h2>
+    {{.error}}
+    {{.msg}}
+</div>
+<div>
+    <h2>查询一个</h2>
+
+    <input id="user_id" type="text" name="ID">
+    <input id="submit" type="button" value="查询"><br>
+    <label>ID</label>
+    <input id="ID" type="text"><br>
+    <label>Name</label>
+    <input id="Name" type="text" ><br>
+    <label>Age</label>
+    <input id="Age" type="text" >
+
+    <script type="application/javascript">
+        $(function () {
+            $("#submit").click(function () {
+                user_id = $("#user_id").val();
+                console.log("user_id:" +user_id);
+                $.ajax({
+                    url: "/db/one?ID=" + user_id,
+                    type: "GET",
+                    success: function (data) {
+                        console.log(data);
+                        if(!data){
+                            return
+                        }
+
+                        $("#ID").val(data.ID);
+                        $("#Name").val(data.Name);
+                        $("#Age").val(data.Age)
+                    }
+                })
+            })
+        })
+    </script>
+</div>
+<br>
+<br>
+<div>
+    <h2>新增一个</h2>
+    <label>Name</label>
+    <input id="xsrf" type="hidden" name="_xsrf" value="{{.xsrf}}" >
+    <input id="name" type="text" name="name"><br>
+    <label>Age</label>
+    <input id="age" type="text" name="age">
+    <input id="addsubmit" type="button" value="新增"><br>
+    <label>ID</label>
+    <input id="addID" type="text"><br>
+    <label>Name</label>
+    <input id="addName" type="text" >
+    <br>
+    <label>Age</label>
+    <input id="addAge" type="text" >
+
+    <script type="application/javascript">
+        $(function () {
+            $("#addsubmit").click(function () {
+                var user_name = $("#name").val();
+                var user_age = $("#age").val();
+                var xsrf = $("#xsrf").val();
+                $.ajax({
+                    url: "/db/add",
+                    data: {"name": user_name, "age": user_age},
+                    headers: {"X-XSRFToken": xsrf},
+                    type: "Post",
+                    success: function (data) {
+                        console.log(data);
+                        if(!data){
+                            return
+                        }
+
+                        $("#addID").val(data.ID);
+                        $("#addName").val(data.Name);
+                        $("#addAge").val(data.Age)
+                    }
+                })
+            })
+        })
+    </script>
+</div>
+<br>
+<br>
+<div>
+<pre>
+    <h2>默认使用 default，你可以指定为其他数据库</h2>
+    db.Using("default")
+
+    <h2>自定义表名</h2>
+    func (u *User) TableName() string {
+        return "auth_user"
+    }
+    <h4>多字段索引</h4>
+    func (u *User) TableIndex() [][]string {
+        return [][]string{
+            []string{"Id", "Name"},
+         }
+    }
+    <h4>多字段唯一值</h4>
+    func (u *User) TableUnique() [][]string {
+        return [][]string{
+            []string{"Name", "Email"},
+        }
+    }
+    <h4>设置引擎</h4>
+    func (u *User) TableEngine() string {
+         return "INNODB"
+    }
+    <h4>设置参数</h4>
+    <table>
+        <tr>
+            <th>名称</th>
+            <th>说明</th>
+            <th>例子</th>
+        </tr>
+        <tr>
+            <td>auto</td>
+            <td>int, int32, int64, uint, uint32, uint64 时，可以设置字段为自
+            增健
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>pk</td>
+            <td>设置为主键</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>null</td>
+            <td>表默认为 NOT NULL，设置 null 代表 ALLOW NULL</td>
+            <td>Name string `orm:"null"`</td>
+        </tr>
+        <tr>
+            <td>index</td>
+            <td>为单个字段增加索引</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>unique</td>
+            <td>为单个字段增加 unique 键</td>
+            <td>Name string `orm:"unique"`</td>
+        </tr>
+        <tr>
+            <td>column</td>
+            <td>为字段设置 db 字段的名称</td>
+            <td>Name string `orm:"column(user_name)"`</td>
+        </tr>
+        <tr>
+            <td>size</td>
+            <td>string 类型字段默认为 varchar(255)</td>
+            <td>Title string `orm:"size(60)"`</td>
+        </tr>
+        <tr>
+            <td>digits / decimals</td>
+            <td>设置 float32, float64 类型的浮点精度</td>
+            <td>Money float64 `orm:"digits(12);decimals(4)"`总长度 12 小数点后 4 位</td>
+        </tr>
+        <tr>
+            <td>auto_now / auto_now_add</td>
+            <td>auto_now 每次 model 保存时都会对时间自劢更新、auto_now_add 第一次保存时才设置时间，批量的 update 此设置是丌生敁的</td>
+            <td>Created time.Time `orm:"auto_now_add;type(datetime)"`Updated time.Time `orm:"auto_now;type(datetime)"`
+</td>
+        </tr>
+        <tr>
+            <td>type</td>
+            <td>设置为 date 时，time.Time 字段的对应 db 类型使用 date</td>
+            <td>Created time.Time `orm:"auto_now_add;type(date)"`</td>
+        </tr>
+        <tr>
+            <td>default</td>
+            <td>为字段设置默认值，类型必项符合</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <h2>表关系设置</h2>
+    <h6>RelOnrToOne一对一</h6>
+     type User struct {
+        Profile *Profile `orm:"null;rel(one);on_delete(set_null)"`
+     }
+     type Profile struct {
+        User *User `orm:"reverse(one)"`
+     }
+
+    <h6>RelForeignKey外键</h6>
+    type Post struct {
+        User *User `orm:"rel(fk)"`
+    }
+
+    type User struct {
+        Posts []*Post `orm:"reverse(many)"`
+    }
+
+    <h6>RelManyToMany</h6>
+    type Post struct {
+        Tags []*Tag `orm:"rel(m2m)"`
+    }
+
+    type Tag struct {
+        Posts []*Post `orm:"reverse(many)"`
+    }
+
+
+    <h2>Update更新</h2>
+    Update 默认更新所有的字段，可以更新指定的字段
+    叧更新 Name
+    o.Update(&user, "Name")
+    指定多个字段
+    o.Update(&user, "Field1", "Field2", ...)
+
+    <h2>事务处理</h2>
+    db.Begin() 开启事务
+    db.Commit()  提交事务
+    db.Rollbakc() 事务回滚
+
+    <h2>高级查询</h2>
+    基本使用方法:
+    o := orm.NewOrm()
+    获取 QuerySeter 对象，user 为表名
+    qs := o.QueryTable("user")
+    qs.Filter("profile__age__gt", 18)
+    Profile__Age__gt 代表 Profile.Age > 18 的条件查询
+
+    Operators
+        当前支持的操作符号：
+        • exact / iexact 等亍
+        • contains / icontains 包吨
+        • gt / gte 大亍 / 大亍等亍
+        • lt / lte 小亍 / 小亍等亍
+        • startswith / istartswith 以...起始
+        • endswith / iendswith 以...绌束
+        • in
+        • isnull
+        后面以 i 开头的表示：大小写丌敂感
+
+    高级查询接口使用
+    QuerySeter 是高级查询使用的接口，我们杢熟悉下他的接口方法
+    • type QuerySeter interface {
+        – Filter(string, ...interface{}) QuerySeter  过滤 包含作用
+        – Exclude(string, ...interface{}) QuerySeter 过滤 排除作用
+        – SetCond(*Condition) QuerySeter  自定义条件表达式
+        – Limit(int, ...int64) QuerySeter  限制返回最大数据行数
+        – Offset(int64) QuerySeter  设置偏移行数
+        – OrderBy(...string) QuerySeter  排序 减号 - 表示 DESC 的排列  qs.OrderBy("id", "-profile__age")
+        – RelatedSel(...interface{}) QuerySeter  设置最大层级查询 默认为5层
+        – Count() (int64, error)   返回结果行数
+        – Exist() bool   判断是否存在
+        – Update(Params) (int64, error) 进行更新
+        – Delete() (int64, error) 进行删除
+        – PrepareInsert() (Inserter, error)  多次插入
+        – All(interface{}, ...string) (int64, error) 返回结果集对象
+        – One(interface{}, ...string) error 返回一个
+        – Values(*[]Params, ...string) (int64, error)
+        – ValuesList(*[]ParamsList, ...string) (int64, error)
+        – ValuesFlat(*ParamsList, string) (int64, error) 只返回指定字段的值在一个slice
+
+    <h2>关系查询</h2>
+    <h4>OnrToOne 一对一查询 加载对应对象</h4>
+    QueryTable("user").Filter("Id", 1).RelatedSel().One(user)
+    反向查询
+    QueryTable("profile").Filter("User__Id", 1).One(&profile)
+
+    <h4>ManyToOne 多对一查询 加载对应对象</h4>
+    QueryTable("post").Filter("User", 1).RelatedSel().All(&posts)
+
+    <h4>ManyToMany 多对多关系操作</h4>
+
+    type QueryM2Mer interface {
+        – Add(...interface{}) (int64, error) 添加
+        – Remove(...interface{}) (int64, error) 删除单个
+        – Exist(interface{}) bool 判断是否存在
+        – Clear() (int64, error)  删除所有
+        – Count() (int64, error)
+    }
+    m2m := o.QueryM2M(&post, "Tags")
+    第一个参数的对象，主键必项有值
+    第二个参数为对象需要操作的 M2M 字段
+
+    添加可以添加多个m2m.Add(tag1, tag2, tag3)
+    删除可以多个 m2m.Remove(tag1, tag2, tag3)
+    判断是否存在 m2m.Exist(&Tag{Id: 2})
+    查询总数  m2m.Count()
+
+    <h4>SQL语句查询</h4>
+     db := orm.NewOrm()
+    var r RawSeter
+    r = db.Raw("update user set name = ? where name = ?", "python", "go")
+
+    type RawSeter interface {
+        – Exec() (sql.Result, error)
+        – QueryRow(...interface{}) error
+        – QueryRows(...interface{}) (int64, error)
+        – SetArgs(...interface{}) RawSeter
+        – Values(*[]Params, ...string) (int64, error)
+        – ValuesList(*[]ParamsList, ...string) (int64, error)
+        – ValuesFlat(*ParamsList, string) (int64, error)
+        – RowsToMap(*Params, string, string) (int64, error)
+        – RowsToStruct(interface{}, string, string) (int64, error)
+        – Prepare() (RawPreparer, error)
+
+
+</pre>
+</div>
+
+</body>
+</html>
